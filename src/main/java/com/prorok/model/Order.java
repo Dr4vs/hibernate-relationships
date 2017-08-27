@@ -1,6 +1,7 @@
 package com.prorok.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -21,8 +24,12 @@ public class Order implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id_order")
 	private Long id;
-	@Column(nullable = false)
-	private String product;
+	@ManyToMany
+	@JoinTable(name="order_products",
+		joinColumns= {@JoinColumn(name="order_id",referencedColumnName="id_order")},
+		inverseJoinColumns={@JoinColumn(name="product_id",referencedColumnName="id_product")}
+			)
+	private List<Product> products;
 	@Column(name = "details", length = 512)
 	private String orderDetails;
 	@ManyToOne
@@ -32,14 +39,9 @@ public class Order implements Serializable {
 	public Order() {
 	}
 
-
-	public Order(String product, String orderDetails, Client client) {
-		this.product = product;
+	public Order(String orderDetails) {
 		this.orderDetails = orderDetails;
-		this.client = client;
 	}
-
-
 
 	public Long getId() {
 		return id;
@@ -49,12 +51,12 @@ public class Order implements Serializable {
 		this.id = id;
 	}
 
-	public String getProduct() {
-		return product;
+	public List<Product> getProducts() {
+		return products;
 	}
 
-	public void setProduct(String product) {
-		this.product = product;
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
 
 	public String getOrderDetails() {
@@ -75,9 +77,8 @@ public class Order implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Order [id=" + id + ", product=" + product + ", orderDetails=" + orderDetails + ", client=" + client.getFirstName()+" "+client.getLastName()
+		return "Order [id=" + id + ", products=" + products + ", orderDetails=" + orderDetails + ", client=" + client
 				+ "]";
 	}
-
 
 }
